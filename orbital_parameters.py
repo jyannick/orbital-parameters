@@ -19,6 +19,7 @@ output_file("orbital-parameters.html")
 N = 180
 Re = 6378 # km
 max_sma = 50000 #km
+plots_range = 80000 #km, half range
 x = np.zeros(N)
 y = np.zeros(N)
 z = np.zeros(N)
@@ -33,7 +34,7 @@ earth = ColumnDataSource(data=dict(x=Re*np.cos(t), upper=Re*np.sin(t), lower=-Re
 # Set up plots
 def create_plot(source, x, y, sat_position, title):
     plot = figure(plot_height=400, plot_width=400, title=title,
-                x_range=[-max_sma, max_sma], y_range=[-max_sma, max_sma], toolbar_location=None)
+                x_range=[-plots_range, plots_range], y_range=[-plots_range, plots_range], toolbar_location=None)
 
     plot.line(x, y, source=source, line_width=3, line_alpha=0.6)
     plot.circle_cross(x, y, source=sat_position, color='red', size=10, fill_alpha=0.2)
@@ -41,10 +42,10 @@ def create_plot(source, x, y, sat_position, title):
                 level='underlay', fill_alpha=0.5, line_width=1, line_color='grey', fill_color='grey'))
     return plot
 
-plot_shape = create_plot(orbit_shape, 'x', 'y', position_in_orbital_plane, 'orbit shape')
+plot_shape = create_plot(orbit_shape, 'x', 'y', position_in_orbital_plane, 'orbit shape in orbital plane')
 plot_pole = create_plot(orbit_3d, 'y', 'x', position_3d, 'orbit seen from North pole')
 plot_vernal = create_plot(orbit_3d, 'y', 'z', position_3d, 'orbit seen from Vernal axis')
-plot_zx = create_plot(orbit_3d, 'z', 'x', position_3d, '')
+plot_xz = create_plot(orbit_3d, 'x', 'z', position_3d, '')
 
 # Set up widgets
 sma = Slider(title="semi-major axis (km)", value=42164, start=0, end=max_sma, step=10)
@@ -120,4 +121,4 @@ for w in [sma, eccentricity, aop, inclination, raan, anomaly]:
 # Set up layouts and add to document
 inputs = widgetbox(sma, eccentricity, aop, inclination, raan, anomaly)
 
-show(grid([[inputs, None, plot_vernal], [plot_shape, plot_zx, plot_pole]]))
+show(grid([[inputs, plot_xz, plot_vernal], [plot_shape, None, plot_pole]]))
