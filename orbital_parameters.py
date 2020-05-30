@@ -19,7 +19,7 @@ from bokeh.models.tools import WheelZoomTool
 from bokeh.models.filters import CustomJSFilter
 from bokeh.models.sources import CDSView
 
-output_file("index.html")
+output_file("index.html", title="Orbital Parameters Visualization")
 # Set up data
 N = 180
 Re = 6378 # km
