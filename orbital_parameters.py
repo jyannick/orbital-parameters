@@ -16,6 +16,8 @@ from bokeh.plotting import figure, output_notebook, output_file, show
 from bokeh.models.annotations import Arrow, Label, Span
 from bokeh.models.arrow_heads import VeeHead
 from bokeh.models.tools import WheelZoomTool
+from bokeh.models.filters import CustomJSFilter
+from bokeh.models.sources import CDSView
 
 output_file("index.html")
 # Set up data
@@ -26,7 +28,7 @@ plots_range = 80000 #km, half range
 x = np.zeros(N)
 y = np.zeros(N)
 z = np.zeros(N)
-orbit_shape = ColumnDataSource(data=dict(x=x, y=y))
+orbit_shape = ColumnDataSource(data=dict(x=x, y=y, z=z))
 position_in_orbital_plane = ColumnDataSource(data=dict(x=np.zeros(1), y=np.zeros(1)))
 orbit_3d = ColumnDataSource(data=dict(x=x, y=y, z=z))
 position_3d = ColumnDataSource(data=dict(x=np.zeros(1), y=np.zeros(1), z=np.zeros(1)))
@@ -35,12 +37,14 @@ t = np.linspace(0, np.pi, 10)
 earth = ColumnDataSource(data=dict(x=Re*np.cos(t), upper=Re*np.sin(t), lower=-Re*np.sin(t)))
 
 # Set up plots
-def create_plot(source, x, y, sat_position, title):
+def create_plot(source, x, y, depth, sat_position, title):
+    depth_is_positive = depth.startswith('+')
+    depth_coordinate = depth[1]
     plot = figure(plot_height=400, plot_width=400, title=title, match_aspect=True, aspect_scale=1,
                 tools = "pan,wheel_zoom,box_zoom,reset",
                 x_range=[-plots_range, plots_range], y_range=[-plots_range, plots_range])
-    
     plot.line(x, y, source=source, line_width=3, line_alpha=0.6)
+    plot.circle(x, y, source=source, view=generate_view(source, depth_coordinate, depth_is_positive), size=5, alpha=0.5)
     plot.circle_cross(x, y, source=sat_position, color='red', size=10, fill_alpha=0.2)
     plot.add_layout(Band(base='x', lower='lower', upper='upper', source=earth, 
                 level='underlay', fill_alpha=0.5, line_width=1, line_color='grey', fill_color='grey'))
@@ -67,17 +71,32 @@ def add_equator_line(plot):
                          line_dash='dashed', line_width=1))
     plot.add_layout(Label(text='equator', x=-0.9*plots_range, y=0.03*plots_range, text_font_size='8pt', text_color='green'))
 
-plot_shape = create_plot(orbit_shape, 'x', 'y', position_in_orbital_plane, 'orbit shape in orbital plane')
+def generate_view(source, axis, positive):
+    filter = CustomJSFilter(code=f'''
+        var indices = [];
+
+        for (var i = 0; i < source.get_length(); i++){{
+            if (source.data['{axis}'][i] {'>' if positive else '<='} 0){{
+                indices.push(true);
+            }} else {{
+                indices.push(false);
+            }}
+        }}
+        return indices;
+    ''')
+    return CDSView(source=source, filters=[filter])
+
+plot_shape = create_plot(orbit_shape, 'x', 'y', '+z', position_in_orbital_plane, 'orbit shape in orbital plane')
 add_ascending_node_direction(plot_shape)
 
-plot_pole = create_plot(orbit_3d, 'x', 'y', position_3d, 'orbit seen from North direction')
+plot_pole = create_plot(orbit_3d, 'x', 'y', '+z', position_3d, 'orbit seen from North direction')
 add_vernal_direction(plot_pole)
 
-plot_vernal = create_plot(orbit_3d, 'y', 'z', position_3d, 'orbit seen from Vernal equinox')
+plot_vernal = create_plot(orbit_3d, 'y', 'z', '+x', position_3d, 'orbit seen from Vernal equinox')
 add_north_direction(plot_vernal)
 add_equator_line(plot_vernal)
 
-plot_xz = create_plot(orbit_3d, 'x', 'z', position_3d, '')
+plot_xz = create_plot(orbit_3d, 'x', 'z', '-y', position_3d, '')
 add_north_direction(plot_xz)
 add_vernal_direction(plot_xz)
 add_equator_line(plot_xz)
@@ -160,5 +179,6 @@ plots = gridplot([[inputs, plot_vernal, plot_xz], [plot_shape, None, plot_pole]]
 intro = Div(text="""
 <h1>Orbital Parameters Visualization</h1>
 <p>Manipulate the sliders to change the keplerian orbit parameters, and see how they affect the orbit in real time.</p>
+<p>When the orbit trajectory is represented by a thick line, it means that it is above the plane of the screen.</p>
 """, sizing_mode="stretch_width")
 show(layout(intro, plots))
