@@ -13,6 +13,8 @@ from bokeh.models import ColumnDataSource, Band
 from bokeh.models.callbacks import CustomJS
 from bokeh.models.widgets import Slider, TextInput, Button
 from bokeh.plotting import figure, output_notebook, output_file, show
+from bokeh.models.annotations import Arrow, Label, Span
+from bokeh.models.arrow_heads import VeeHead
 
 output_file("orbital-parameters.html")
 # Set up data
@@ -42,10 +44,42 @@ def create_plot(source, x, y, sat_position, title):
                 level='underlay', fill_alpha=0.5, line_width=1, line_color='grey', fill_color='grey'))
     return plot
 
+def add_north_direction(plot):
+    plot.add_layout(Arrow(end=VeeHead(size=10), line_width=3,
+                   x_start=0, y_start=0.5*plots_range, x_end=0, y_end=plots_range))
+    plot.add_layout(Label(text="North", x=0.05*plots_range, y=0.8*plots_range, text_font_size='8pt'))
+
+def add_vernal_direction(plot):
+    plot.add_layout(Arrow(end=VeeHead(size=10), line_width=3,
+                   x_start=0.5*plots_range, y_start=0, x_end=plots_range, y_end=0))
+    plot.add_layout(Label(text="Vernal equinox", x=0.5*plots_range, y=-0.1*plots_range, text_font_size='8pt'))
+
+def add_ascending_node_direction(plot):
+    plot.add_layout(Arrow(end=VeeHead(size=10), line_width=3,
+                   x_start=0, y_start=0, x_end=0.3*plots_range, y_end=0))
+    plot.add_layout(Label(text="ascending node", x=0.33*plots_range, y=-0.03*plots_range, text_font_size='8pt'))
+
+def add_equator_line(plot):
+    plot.add_layout(Span(location=0,
+                         dimension='width', line_color='green',
+                         line_dash='dashed', line_width=1))
+    plot.add_layout(Label(text='equator', x=-0.9*plots_range, y=0.03*plots_range, text_font_size='8pt', text_color='green'))
+
 plot_shape = create_plot(orbit_shape, 'x', 'y', position_in_orbital_plane, 'orbit shape in orbital plane')
-plot_pole = create_plot(orbit_3d, 'y', 'x', position_3d, 'orbit seen from North pole')
-plot_vernal = create_plot(orbit_3d, 'y', 'z', position_3d, 'orbit seen from Vernal axis')
+add_ascending_node_direction(plot_shape)
+
+plot_pole = create_plot(orbit_3d, 'x', 'y', position_3d, 'orbit seen from North direction')
+add_vernal_direction(plot_pole)
+
+plot_vernal = create_plot(orbit_3d, 'y', 'z', position_3d, 'orbit seen from Vernal equinox')
+add_north_direction(plot_vernal)
+add_equator_line(plot_vernal)
+
 plot_xz = create_plot(orbit_3d, 'x', 'z', position_3d, '')
+add_north_direction(plot_xz)
+add_vernal_direction(plot_xz)
+add_equator_line(plot_xz)
+
 
 # Set up widgets
 sma = Slider(title="semi-major axis (km)", value=42164, start=0, end=max_sma, step=10)
@@ -121,4 +155,4 @@ for w in [sma, eccentricity, aop, inclination, raan, anomaly]:
 # Set up layouts and add to document
 inputs = widgetbox(sma, eccentricity, aop, inclination, raan, anomaly)
 
-show(grid([[inputs, plot_xz, plot_vernal], [plot_shape, None, plot_pole]]))
+show(grid([[inputs, plot_vernal, plot_xz], [plot_shape, None, plot_pole]]))
