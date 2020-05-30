@@ -8,13 +8,14 @@ In this version, the callbacks are written as strings of JS code.
 '''
 import numpy as np
 
-from bokeh.layouts import grid, widgetbox
-from bokeh.models import ColumnDataSource, Band
+from bokeh.layouts import column, gridplot, layout
+from bokeh.models import ColumnDataSource, Band, Div
 from bokeh.models.callbacks import CustomJS
 from bokeh.models.widgets import Slider, TextInput, Button
 from bokeh.plotting import figure, output_notebook, output_file, show
 from bokeh.models.annotations import Arrow, Label, Span
 from bokeh.models.arrow_heads import VeeHead
+from bokeh.models.tools import WheelZoomTool
 
 output_file("index.html")
 # Set up data
@@ -35,9 +36,10 @@ earth = ColumnDataSource(data=dict(x=Re*np.cos(t), upper=Re*np.sin(t), lower=-Re
 
 # Set up plots
 def create_plot(source, x, y, sat_position, title):
-    plot = figure(plot_height=400, plot_width=400, title=title, match_aspect=True,
-                x_range=[-plots_range, plots_range], y_range=[-plots_range, plots_range], toolbar_location=None)
-
+    plot = figure(plot_height=400, plot_width=400, title=title, match_aspect=True, aspect_scale=1,
+                tools = "pan,wheel_zoom,box_zoom,reset",
+                x_range=[-plots_range, plots_range], y_range=[-plots_range, plots_range])
+    
     plot.line(x, y, source=source, line_width=3, line_alpha=0.6)
     plot.circle_cross(x, y, source=sat_position, color='red', size=10, fill_alpha=0.2)
     plot.add_layout(Band(base='x', lower='lower', upper='upper', source=earth, 
@@ -153,6 +155,10 @@ for w in [sma, eccentricity, aop, inclination, raan, anomaly]:
     w.js_on_change('value', CustomJS(args=slider_args, code=sliders_callback_code))
 
 # Set up layouts and add to document
-inputs = widgetbox(sma, eccentricity, aop, inclination, raan, anomaly)
-
-show(grid([[inputs, plot_vernal, plot_xz], [plot_shape, None, plot_pole]]))
+inputs = column(Div(text='<h2>Orbital Parameters</h2>'), sma, eccentricity, aop, inclination, raan, anomaly, sizing_mode="stretch_width")
+plots = gridplot([[inputs, plot_vernal, plot_xz], [plot_shape, None, plot_pole]], toolbar_options=dict(logo=None))
+intro = Div(text="""
+<h1>Orbital Parameters Visualization</h1>
+<p>Manipulate the sliders to change the keplerian orbit parameters, and see how they affect the orbit in real time.</p>
+""", sizing_mode="stretch_width")
+show(layout(intro, plots))
