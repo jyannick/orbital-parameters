@@ -16,7 +16,7 @@ from bokeh.plotting import figure, output_notebook, output_file, show
 from bokeh.models.annotations import Arrow, Label, Span
 from bokeh.models.arrow_heads import VeeHead
 
-output_file("orbital-parameters.html")
+output_file("index.html")
 # Set up data
 N = 180
 Re = 6378 # km
