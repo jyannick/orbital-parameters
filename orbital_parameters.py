@@ -35,7 +35,7 @@ earth = ColumnDataSource(data=dict(x=Re*np.cos(t), upper=Re*np.sin(t), lower=-Re
 
 # Set up plots
 def create_plot(source, x, y, sat_position, title):
-    plot = figure(plot_height=400, plot_width=400, title=title,
+    plot = figure(plot_height=400, plot_width=400, title=title, match_aspect=True,
                 x_range=[-plots_range, plots_range], y_range=[-plots_range, plots_range], toolbar_location=None)
 
     plot.line(x, y, source=source, line_width=3, line_alpha=0.6)
