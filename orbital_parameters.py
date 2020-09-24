@@ -41,7 +41,7 @@ def create_plot(source, x, y, depth, sat_position, title):
     depth_is_positive = depth.startswith('+')
     depth_coordinate = depth[1]
     plot = figure(plot_height=400, plot_width=400, title=title, match_aspect=True, aspect_scale=1,
-                tools = "pan,wheel_zoom,box_zoom,reset",
+                tools = "",
                 x_range=[-plots_range, plots_range], y_range=[-plots_range, plots_range])
     plot.line(x, y, source=source, line_width=3, line_alpha=0.6)
     plot.circle(x, y, source=source, view=generate_view(source, depth_coordinate, depth_is_positive), size=5, alpha=0.5)
