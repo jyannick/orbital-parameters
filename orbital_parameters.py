@@ -111,15 +111,16 @@ raan = Slider(title="right ascension of ascending node (deg)", value=0, start=0,
 anomaly = Slider(title="true anomaly (deg)", value=0, start=0, end=360, step=2)
 
 # Set up callbacks
-sliders_callback_code=f"""
+sliders_callback_code="""
     const a = sma.value,
         e = eccentricity.value,
-        N = {N},
         b = a * window.Math.sqrt(1 - e**2),
         c = window.Math.sqrt(a**2 - b**2),
         omega = aop.value * window.Math.PI / 180,
         inc = inclination.value * window.Math.PI / 180,
         Gomega = raan.value * window.Math.PI / 180,
+        mu = 3.986004418e14,
+        earth_radius = 6371,
         anomaly_index = window.Math.round(anomaly.value / 360 * (N+1)),
         x_shape = orbit_shape.data['x'],
         y_shape = orbit_shape.data['y'],
@@ -132,7 +133,7 @@ sliders_callback_code=f"""
         y=orbit_3d.data['y'],
         z=orbit_3d.data['z']
 
-    for(let i=0; i < N; i++) {{
+    for(let i=0; i < N; i++) {
         let t = i/(N-1) * 2 * window.Math.PI
         let cos_omega = window.Math.cos(omega)
         let sin_omega = window.Math.sin(omega)
@@ -153,7 +154,7 @@ sliders_callback_code=f"""
         x[i] = x_incli_only * cos_Gomega - y_incli_only * sin_Gomega
         y[i] = x_incli_only * sin_Gomega + y_incli_only * cos_Gomega
         z[i] = z_incli_only
-    }}
+    }
 
     x_sat_in_orbital_plane[0] = x_shape[anomaly_index]
     y_sat_in_orbital_plane[0] = y_shape[anomaly_index]
@@ -165,17 +166,34 @@ sliders_callback_code=f"""
     orbit_3d.change.emit()
     position_in_orbital_plane.change.emit()
     position_3d.change.emit()
+
+    let orbital_period_hours = 2 * window.Math.PI * window.Math.sqrt((a*1000)**3/mu) / 3600
+    let apogee_altitude = a*(1+e)-earth_radius 
+    let perigee_altitude = a*(1-e)-earth_radius 
+
+    orbit_description_div.text = `<h2>Orbital Data</h2>
+                                    <ul>
+                                        <li>Orbital period: ${orbital_period_hours.toFixed(3)} hours</li>
+                                        <li>Apogee altitude: ${apogee_altitude.toFixed(0)} kilometers</li>
+                                        <li>Perigee altitude: ${perigee_altitude.toFixed(0)} kilometers</li>
+                                    </ul>`
 """
 
-slider_args = dict(orbit_shape=orbit_shape, orbit_3d=orbit_3d, position_in_orbital_plane=position_in_orbital_plane, position_3d=position_3d,
-sma=sma, eccentricity=eccentricity, aop=aop, inclination=inclination, raan=raan, anomaly=anomaly)
+orbit_description_div = Div(text="""
+<h2>Orbital Data</h2>
+<p>Please manipulate the sliders to update this data.</p>
+""")
+
+
+callback_args = dict(orbit_shape=orbit_shape, orbit_3d=orbit_3d, position_in_orbital_plane=position_in_orbital_plane, position_3d=position_3d,
+sma=sma, eccentricity=eccentricity, aop=aop, inclination=inclination, raan=raan, anomaly=anomaly, N=N, orbit_description_div=orbit_description_div)
 
 for w in [sma, eccentricity, aop, inclination, raan, anomaly]:
-    w.js_on_change('value', CustomJS(args=slider_args, code=sliders_callback_code))
+    w.js_on_change('value', CustomJS(args=callback_args, code=sliders_callback_code))
 
 # Set up layouts and add to document
 inputs = column(Div(text='<h2>Orbital Parameters</h2>'), sma, eccentricity, aop, inclination, raan, anomaly, sizing_mode="stretch_width")
-plots = gridplot([[inputs, plot_vernal, plot_xz], [plot_shape, None, plot_pole]], toolbar_options=dict(logo=None))
+plots = gridplot([[inputs, plot_vernal, plot_xz], [plot_shape, orbit_description_div, plot_pole]], toolbar_options=dict(logo=None))
 intro = Div(text="""
 <h1>Orbital Parameters Visualization</h1>
 <p>Manipulate the sliders to change the keplerian orbit parameters, and see how they affect the orbit in real time.</p>
