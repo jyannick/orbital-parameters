@@ -1,0 +1,18 @@
+html {
+  background-color: rgb(40,40,40);
+  color: dodgerblue;
+}
+
+.bk-root {
+  width: max-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.bk-noUi-base {
+  background-color: rgb(0, 8, 121);
+}
+
+.bk-noUi-connect {
+  background-color: rgb(35, 49, 245) !important;
+}

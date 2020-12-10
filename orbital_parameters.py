@@ -10,6 +10,9 @@ from bokeh.models.arrow_heads import VeeHead
 from bokeh.models.filters import CustomJSFilter
 from bokeh.models.sources import CDSView
 
+NORTH_ARROW_COLOR = "rgb(35, 49, 245)"
+VERNAL_ARROW_COLOR = "rgb(85, 0, 138)"
+
 output_file("index.html", title="Orbital Parameters Visualization")
 # Set up data
 N = 180
@@ -44,8 +47,20 @@ def create_plot(source, x, y, depth, sat_position, title):
         tools="",
         x_range=[-plots_range, plots_range],
         y_range=[-plots_range, plots_range],
+        background_fill_color="rgb(32, 32, 32)",
+        border_fill_color="rgb(40, 40, 40)",
+        outline_line_color="navy",
     )
-    plot.line(x, y, source=source, line_width=3, line_alpha=0.6)
+    plot.title.text_color = "dodgerblue"
+    plot.grid.grid_line_color = "rgb(0, 8, 121)"
+    plot.line(
+        x,
+        y,
+        source=source,
+        line_width=3,
+        line_alpha=0.6,
+        line_color="dodgerblue",
+    )
     plot.line(
         x,
         y,
@@ -53,6 +68,7 @@ def create_plot(source, x, y, depth, sat_position, title):
         view=generate_view(source, depth_coordinate, depth_is_positive),
         line_width=5,
         alpha=0.5,
+        line_color="dodgerblue",
     )
     plot.circle_cross(x, y, source=sat_position, color="red", size=10, fill_alpha=0.2)
     plot.add_layout(
@@ -74,12 +90,15 @@ def create_plot(source, x, y, depth, sat_position, title):
 def add_north_direction(plot):
     plot.add_layout(
         Arrow(
-            end=VeeHead(size=10),
+            end=VeeHead(
+                size=10, fill_color=NORTH_ARROW_COLOR, line_color=NORTH_ARROW_COLOR
+            ),
             line_width=3,
             x_start=0,
             y_start=0.5 * plots_range,
             x_end=0,
             y_end=plots_range,
+            line_color=NORTH_ARROW_COLOR,
         )
     )
     plot.add_layout(
@@ -88,6 +107,7 @@ def add_north_direction(plot):
             x=0.05 * plots_range,
             y=0.8 * plots_range,
             text_font_size="8pt",
+            text_color=NORTH_ARROW_COLOR,
         )
     )
 
@@ -95,12 +115,15 @@ def add_north_direction(plot):
 def add_vernal_direction(plot):
     plot.add_layout(
         Arrow(
-            end=VeeHead(size=10),
+            end=VeeHead(
+                size=10, fill_color=VERNAL_ARROW_COLOR, line_color=VERNAL_ARROW_COLOR
+            ),
             line_width=3,
             x_start=0.5 * plots_range,
             y_start=0,
             x_end=plots_range,
             y_end=0,
+            line_color=VERNAL_ARROW_COLOR,
         )
     )
     plot.add_layout(
@@ -109,6 +132,7 @@ def add_vernal_direction(plot):
             x=0.5 * plots_range,
             y=-0.1 * plots_range,
             text_font_size="8pt",
+            text_color=VERNAL_ARROW_COLOR,
         )
     )
 
@@ -268,6 +292,7 @@ plots = gridplot(
     [[inputs, plot_vernal, plot_xz], [plot_shape, orbit_description_div, plot_pole]],
     toolbar_options=dict(logo=None),
 )
+style = Div(text='<LINK href="style.css" rel="stylesheet" type="text/css">')
 intro = Div(
     text="""
 <h1>Orbital Parameters Visualization</h1>
@@ -278,4 +303,4 @@ intro = Div(
 """,
     sizing_mode="stretch_width",
 )
-show(layout(intro, plots))
+show(layout(style, intro, plots))
