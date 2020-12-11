@@ -292,7 +292,7 @@ plots = gridplot(
     [[inputs, plot_vernal, plot_xz], [plot_shape, orbit_description_div, plot_pole]],
     toolbar_options=dict(logo=None),
 )
-style = Div(text='<LINK href="style.css" rel="stylesheet" type="text/css">')
+style = Div(text="<LINK href='style.css' rel='stylesheet' type='text/css'>")
 intro = Div(
     text="""
 <h1>Orbital Parameters Visualization</h1>
@@ -303,4 +303,12 @@ intro = Div(
 """,
     sizing_mode="stretch_width",
 )
-show(layout(style, intro, plots))
+footnote = Div(
+    align="center",
+    text="""
+    <a href="https://github.com/jyannick/orbital-parameters">
+        View project page on GitHub
+    </a>
+    """,
+)
+show(layout(style, intro, plots, footnote))
