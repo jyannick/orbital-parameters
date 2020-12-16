@@ -11,7 +11,8 @@ from bokeh.models.filters import CustomJSFilter
 from bokeh.models.sources import CDSView
 
 NORTH_ARROW_COLOR = "rgb(35, 49, 245)"
-VERNAL_ARROW_COLOR = "rgb(85, 0, 138)"
+VERNAL_ARROW_COLOR = "rgb(8, 94, 71)"
+ORBIT_COLOR = "rgb(84, 227, 220)"
 
 output_file("index.html", title="Orbital Parameters Visualization")
 # Set up data
@@ -49,17 +50,17 @@ def create_plot(source, x, y, depth, sat_position, title):
         y_range=[-plots_range, plots_range],
         background_fill_color="rgb(32, 32, 32)",
         border_fill_color="rgb(40, 40, 40)",
-        outline_line_color="navy",
+        outline_line_alpha=0,
     )
     plot.title.text_color = "dodgerblue"
-    plot.grid.grid_line_color = "rgb(0, 8, 121)"
+    plot.grid.visible = False
     plot.line(
         x,
         y,
         source=source,
         line_width=3,
-        line_alpha=0.6,
-        line_color="dodgerblue",
+        line_alpha=0.8,
+        line_color=ORBIT_COLOR,
     )
     plot.line(
         x,
@@ -67,8 +68,8 @@ def create_plot(source, x, y, depth, sat_position, title):
         source=source,
         view=generate_view(source, depth_coordinate, depth_is_positive),
         line_width=5,
-        alpha=0.5,
-        line_color="dodgerblue",
+        alpha=0.8,
+        line_color=ORBIT_COLOR,
     )
     plot.circle_cross(x, y, source=sat_position, color="red", size=10, fill_alpha=0.2)
     plot.add_layout(
@@ -251,10 +252,11 @@ with open("callback.js", "r") as f:
     sliders_callback_code = f.read()
 
 orbit_description_div = Div(
+    css_classes=["orbit-description"],
     text="""
 <h2>Orbital Data</h2>
 <p>Please manipulate the sliders to update this data.</p>
-"""
+""",
 )
 
 

@@ -16,3 +16,7 @@ html {
 .bk-noUi-connect {
   background-color: rgb(35, 49, 245) !important;
 }
+
+a {
+  color: dodgerblue;
+}
