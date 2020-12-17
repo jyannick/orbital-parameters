@@ -20,3 +20,35 @@ html {
 a {
   color: dodgerblue;
 }
+
+.sma_slider {
+  color: yellow;
+}
+
+.sma_slider .bk-noUi-connect {
+  background-color: yellow !important;
+}
+
+.omega_slider {
+  color: orange;
+}
+
+.omega_slider .bk-noUi-connect {
+  background-color: orange !important;
+}
+
+.Gomega_slider {
+  color: green;
+}
+
+.Gomega_slider .bk-noUi-connect {
+  background-color: green !important;
+}
+
+.anomaly_slider {
+  color: red;
+}
+
+.anomaly_slider .bk-noUi-connect {
+  background-color: red !important;
+}

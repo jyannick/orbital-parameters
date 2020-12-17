@@ -1,7 +1,7 @@
 import numpy as np
 
 from bokeh.layouts import column, gridplot, layout
-from bokeh.models import ColumnDataSource, Band, Div
+from bokeh.models import ColumnDataSource, Band, Div, LabelSet
 from bokeh.models.callbacks import CustomJS
 from bokeh.models.widgets import Slider
 from bokeh.plotting import figure, output_file, show
@@ -13,6 +13,10 @@ from bokeh.models.sources import CDSView
 NORTH_ARROW_COLOR = "rgb(35, 49, 245)"
 VERNAL_ARROW_COLOR = "rgb(8, 94, 71)"
 ORBIT_COLOR = "rgb(84, 227, 220)"
+SMA_COLOR = "yellow"
+OMEGA_COLOR = "orange"
+GOMEGA_COLOR = "green"
+V_COLOR = "red"
 
 output_file("index.html", title="Orbital Parameters Visualization")
 # Set up data
@@ -29,10 +33,72 @@ apsides_in_orbital_plane = ColumnDataSource(data=dict(x=np.zeros(2), y=np.zeros(
 
 orbit_3d = ColumnDataSource(data=dict(x=x, y=y, z=z))
 position_3d = ColumnDataSource(data=dict(x=np.zeros(1), y=np.zeros(1), z=np.zeros(1)))
+orbital_parameters = ColumnDataSource(
+    data=dict(
+        a_x_start=np.zeros(1),
+        a_x_end=np.zeros(1),
+        a_y_start=np.zeros(1),
+        a_y_end=np.zeros(1),
+        a_label_x=np.zeros(1),
+        a_label_y=np.zeros(1),
+        a_text=["a"],
+        e=np.zeros(1),
+        i=np.zeros(1),
+        omega=np.zeros(1),
+        omega_label_x=np.zeros(1),
+        omega_label_y=np.zeros(1),
+        omega_text=["ω"],
+        Gomega=np.zeros(1),
+        Gomega_label_x=np.zeros(1),
+        Gomega_label_y=np.zeros(1),
+        Gomega_text=["Ω"],
+        v_start=np.zeros(1),
+        v_end=np.zeros(1),
+        v_label_x=np.zeros(1),
+        v_label_y=np.zeros(1),
+        v_text=["𝜈"],
+    )
+)
 
 t = np.linspace(0, np.pi, 10)
 earth = ColumnDataSource(
     data=dict(x=Re * np.cos(t), upper=Re * np.sin(t), lower=-Re * np.sin(t))
+)
+
+# Set up widgets
+sma = Slider(
+    title="a: semi-major axis (km)",
+    value=42164,
+    start=0,
+    end=max_sma,
+    step=10,
+    css_classes=["sma_slider"],
+)
+eccentricity = Slider(title="eccentricity (-)", value=0.7, start=0, end=1, step=0.01)
+aop = Slider(
+    title="ω: argument of perigee (deg)",
+    value=0,
+    start=0,
+    end=360,
+    step=1,
+    css_classes=["omega_slider"],
+)
+inclination = Slider(title="inclination (deg)", value=0, start=0, end=180, step=1)
+raan = Slider(
+    title="right ascension of ascending node (deg)",
+    value=0,
+    start=0,
+    end=360,
+    step=1,
+    css_classes=["Gomega_slider"],
+)
+anomaly = Slider(
+    title="𝜈: true anomaly (deg)",
+    value=0,
+    start=0,
+    end=359,
+    step=1,
+    css_classes=["anomaly_slider"],
 )
 
 
@@ -191,6 +257,114 @@ def add_equator_line(plot):
     )
 
 
+def add_sma(plot):
+    plot.segment(
+        x0="a_x_start",
+        x1="a_x_end",
+        y0="a_y_start",
+        y1="a_y_end",
+        source=orbital_parameters,
+        line_width=3,
+        line_alpha=0.8,
+        color=SMA_COLOR,
+    )
+    plot.add_layout(
+        LabelSet(
+            text="a_text",
+            x="a_label_x",
+            y="a_label_y",
+            text_baseline="middle",
+            text_align="center",
+            source=orbital_parameters,
+            text_color=SMA_COLOR,
+            x_offset=10,
+            y_offset=10,
+        )
+    )
+
+
+def add_omega(plot):
+    plot.annular_wedge(
+        x=0,
+        y=0,
+        start_angle=0,
+        end_angle="omega",
+        inner_radius=8000,
+        outer_radius=10000,
+        color=OMEGA_COLOR,
+        source=orbital_parameters,
+    )
+    plot.add_layout(
+        LabelSet(
+            text="omega_text",
+            x="omega_label_x",
+            y="omega_label_y",
+            text_baseline="middle",
+            text_align="center",
+            source=orbital_parameters,
+            text_color=OMEGA_COLOR,
+        )
+    )
+
+
+def add_Gomega(plot):
+    plot.annular_wedge(
+        x=0,
+        y=0,
+        start_angle=0,
+        end_angle="Gomega",
+        inner_radius=8000,
+        outer_radius=10000,
+        color=GOMEGA_COLOR,
+        source=orbital_parameters,
+    )
+    plot.add_layout(
+        LabelSet(
+            text="Gomega_text",
+            x="Gomega_label_x",
+            y="Gomega_label_y",
+            text_baseline="middle",
+            text_align="center",
+            source=orbital_parameters,
+            text_color=GOMEGA_COLOR,
+        )
+    )
+
+
+def add_anomaly(plot):
+    plot.annular_wedge(
+        x=0,
+        y=0,
+        start_angle="v_start",
+        end_angle="v_end",
+        inner_radius=10000,
+        outer_radius=12000,
+        color=V_COLOR,
+        source=orbital_parameters,
+    )
+    plot.add_layout(
+        LabelSet(
+            text="v_text",
+            x="v_label_x",
+            y="v_label_y",
+            text_baseline="middle",
+            text_align="center",
+            source=orbital_parameters,
+            text_color=V_COLOR,
+        )
+    )
+    plot.segment(
+        x0=0,
+        y0=0,
+        x1="x",
+        y1="y",
+        source=position_in_orbital_plane,
+        line_width=3,
+        line_alpha=0.3,
+        color="grey",
+    )
+
+
 def generate_view(source, axis, positive):
     filter = CustomJSFilter(
         code=f"""
@@ -219,11 +393,15 @@ plot_shape = create_plot(
 )
 add_ascending_node_direction(plot_shape)
 add_apsides_line(plot_shape)
+add_sma(plot_shape)
+add_omega(plot_shape)
+add_anomaly(plot_shape)
 
 plot_pole = create_plot(
     orbit_3d, "x", "y", "+z", position_3d, "orbit seen from North direction"
 )
 add_vernal_direction(plot_pole)
+add_Gomega(plot_pole)
 
 plot_vernal = create_plot(
     orbit_3d, "y", "z", "+x", position_3d, "orbit seen from Vernal equinox"
@@ -235,17 +413,6 @@ plot_xz = create_plot(orbit_3d, "x", "z", "-y", position_3d, "")
 add_north_direction(plot_xz)
 add_vernal_direction(plot_xz)
 add_equator_line(plot_xz)
-
-
-# Set up widgets
-sma = Slider(title="semi-major axis (km)", value=42164, start=0, end=max_sma, step=10)
-eccentricity = Slider(title="eccentricity (-)", value=0.7, start=0, end=1, step=0.01)
-aop = Slider(title="argument of perigee (deg)", value=0, start=0, end=360, step=1)
-inclination = Slider(title="inclination (deg)", value=0, start=0, end=180, step=1)
-raan = Slider(
-    title="right ascension of ascending node (deg)", value=0, start=0, end=360, step=1
-)
-anomaly = Slider(title="true anomaly (deg)", value=0, start=0, end=359, step=1)
 
 # Set up callbacks
 with open("callback.js", "r") as f:
@@ -274,6 +441,7 @@ callback_args = dict(
     anomaly=anomaly,
     N=N,
     orbit_description_div=orbit_description_div,
+    orbital_parameters=orbital_parameters,
 )
 
 for w in [sma, eccentricity, aop, inclination, raan, anomaly]:

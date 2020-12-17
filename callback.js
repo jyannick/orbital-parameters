@@ -4,6 +4,7 @@ const a = sma.value,
   omega = (aop.value * window.Math.PI) / 180,
   inc = (inclination.value * window.Math.PI) / 180,
   Gomega = (raan.value * window.Math.PI) / 180,
+  true_anomaly = (anomaly.value * window.Math.PI) / 180,
   mu = 3.986004418e14,
   earth_radius = 6378,
   x_shape_array = orbit_shape.data["x"],
@@ -65,7 +66,7 @@ y_apsides_in_orbital_plane[0] = a * (1 - e) * sin_omega;
 x_apsides_in_orbital_plane[1] = -a * (1 + e) * cos_omega;
 y_apsides_in_orbital_plane[1] = -a * (1 + e) * sin_omega;
 
-let sat_results = compute_orbit((anomaly.value * window.Math.PI) / 180);
+let sat_results = compute_orbit(true_anomaly);
 x_sat_in_orbital_plane[0] = sat_results.x_shape;
 y_sat_in_orbital_plane[0] = sat_results.y_shape;
 x_sat[0] = sat_results.x;
@@ -90,3 +91,37 @@ orbit_description_div.text = `
             <li>Apogee altitude: ${apogee_altitude.toFixed(0)} kilometers</li>
             <li>Perigee altitude: ${perigee_altitude.toFixed(0)} kilometers</li>
         </ul>`;
+
+let x_center_in_orbital_plane =
+  (x_apsides_in_orbital_plane[0] + x_apsides_in_orbital_plane[1]) / 2;
+let y_center_in_orbital_plane =
+  (y_apsides_in_orbital_plane[0] + y_apsides_in_orbital_plane[1]) / 2;
+orbital_parameters.data["a_x_start"][0] = x_center_in_orbital_plane;
+orbital_parameters.data["a_x_end"][0] = x_apsides_in_orbital_plane[1];
+orbital_parameters.data["a_y_start"][0] = y_center_in_orbital_plane;
+orbital_parameters.data["a_y_end"][0] = y_apsides_in_orbital_plane[1];
+orbital_parameters.data["a_label_x"][0] =
+  (orbital_parameters.data["a_x_start"][0] +
+    orbital_parameters.data["a_x_end"][0]) /
+  2;
+orbital_parameters.data["a_label_y"][0] =
+  (orbital_parameters.data["a_y_start"][0] +
+    orbital_parameters.data["a_y_end"][0]) /
+  2;
+orbital_parameters.data["e"][0] = e;
+orbital_parameters.data["i"][0] = inc;
+orbital_parameters.data["omega"][0] = omega;
+orbital_parameters.data["omega_label_x"][0] = 15e3 * window.Math.cos(omega / 2);
+orbital_parameters.data["omega_label_y"][0] = 15e3 * window.Math.sin(omega / 2);
+orbital_parameters.data["Gomega"][0] = Gomega;
+orbital_parameters.data["Gomega_label_x"][0] =
+  15e3 * window.Math.cos(Gomega / 2);
+orbital_parameters.data["Gomega_label_y"][0] =
+  15e3 * window.Math.sin(Gomega / 2);
+orbital_parameters.data["v_start"][0] = omega;
+orbital_parameters.data["v_end"][0] = omega + true_anomaly;
+orbital_parameters.data["v_label_x"][0] =
+  17e3 * window.Math.cos(omega + true_anomaly / 2);
+orbital_parameters.data["v_label_y"][0] =
+  17e3 * window.Math.sin(omega + true_anomaly / 2);
+orbital_parameters.change.emit();
