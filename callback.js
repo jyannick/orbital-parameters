@@ -18,7 +18,9 @@ const a = sma.value,
   y_array = orbit_3d.data["y"],
   z_array = orbit_3d.data["z"],
   x_apsides_in_orbital_plane = apsides_in_orbital_plane.data["x"],
-  y_apsides_in_orbital_plane = apsides_in_orbital_plane.data["y"];
+  y_apsides_in_orbital_plane = apsides_in_orbital_plane.data["y"],
+  x_nodes_in_equatorial_plane = nodes_in_equatorial_plane.data["x"],
+  y_nodes_in_equatorial_plane = nodes_in_equatorial_plane.data["y"];
 
 let cos_omega = window.Math.cos(omega);
 let sin_omega = window.Math.sin(omega);
@@ -27,10 +29,14 @@ let sin_Gomega = window.Math.sin(Gomega);
 let cos_i = window.Math.cos(inc);
 let sin_i = window.Math.sin(inc);
 
+function radius(cosinus_v) {
+  return p / (1 + e * cosinus_v);
+}
+
 function compute_orbit(v) {
   let cos_v = window.Math.cos(v);
   let sin_v = window.Math.sin(v);
-  let r = p / (1 + e * cos_v);
+  let r = radius(cos_v);
 
   let x_shape = r * cos_omega * cos_v - r * sin_omega * sin_v;
   let y_shape = r * sin_omega * cos_v + r * cos_omega * sin_v;
@@ -66,6 +72,13 @@ y_apsides_in_orbital_plane[0] = a * (1 - e) * sin_omega;
 x_apsides_in_orbital_plane[1] = -a * (1 + e) * cos_omega;
 y_apsides_in_orbital_plane[1] = -a * (1 + e) * sin_omega;
 
+let radius_ascending_node = radius(window.Math.cos(2 * window.Math.PI - omega));
+x_nodes_in_equatorial_plane[0] = radius_ascending_node * cos_Gomega;
+y_nodes_in_equatorial_plane[0] = radius_ascending_node * sin_Gomega;
+let radius_descending_node = radius(window.Math.cos(window.Math.PI - omega));
+x_nodes_in_equatorial_plane[1] = -radius_descending_node * cos_Gomega;
+y_nodes_in_equatorial_plane[1] = -radius_descending_node * sin_Gomega;
+
 let sat_results = compute_orbit(true_anomaly);
 x_sat_in_orbital_plane[0] = sat_results.x_shape;
 y_sat_in_orbital_plane[0] = sat_results.y_shape;
@@ -78,6 +91,7 @@ orbit_3d.change.emit();
 position_in_orbital_plane.change.emit();
 position_3d.change.emit();
 apsides_in_orbital_plane.change.emit();
+nodes_in_equatorial_plane.change.emit();
 
 let orbital_period_hours =
   (2 * window.Math.PI * window.Math.sqrt((a * 1000) ** 3 / mu)) / 3600;

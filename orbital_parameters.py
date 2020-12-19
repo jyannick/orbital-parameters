@@ -30,7 +30,9 @@ z = np.zeros(N)
 orbit_shape = ColumnDataSource(data=dict(x=x, y=y, z=z))
 position_in_orbital_plane = ColumnDataSource(data=dict(x=np.zeros(1), y=np.zeros(1)))
 apsides_in_orbital_plane = ColumnDataSource(data=dict(x=np.zeros(2), y=np.zeros(2)))
-
+nodes_in_equatorial_plane = ColumnDataSource(
+    data=dict(x=np.zeros(2), y=np.zeros(2), labels=["asc. node", "desc. node"])
+)
 orbit_3d = ColumnDataSource(data=dict(x=x, y=y, z=z))
 position_3d = ColumnDataSource(data=dict(x=np.zeros(1), y=np.zeros(1), z=np.zeros(1)))
 orbital_parameters = ColumnDataSource(
@@ -162,7 +164,7 @@ def add_north_direction(plot):
             ),
             line_width=3,
             x_start=0,
-            y_start=0.5 * plots_range,
+            y_start=0,
             x_end=0,
             y_end=plots_range,
             line_color=NORTH_ARROW_COLOR,
@@ -186,7 +188,7 @@ def add_vernal_direction(plot):
                 size=10, fill_color=VERNAL_ARROW_COLOR, line_color=VERNAL_ARROW_COLOR
             ),
             line_width=3,
-            x_start=0.5 * plots_range,
+            x_start=0,
             y_start=0,
             x_end=plots_range,
             y_end=0,
@@ -211,7 +213,7 @@ def add_ascending_node_direction(plot):
             line_width=3,
             x_start=0,
             y_start=0,
-            x_end=0.3 * plots_range,
+            x_end=0.5 * plots_range,
             y_end=0,
         )
     )
@@ -221,6 +223,7 @@ def add_ascending_node_direction(plot):
             x=0.33 * plots_range,
             y=-0.03 * plots_range,
             text_font_size="8pt",
+            text_color="grey",
         )
     )
 
@@ -233,6 +236,31 @@ def add_apsides_line(plot):
         line_width=3,
         line_alpha=0.3,
         color="grey",
+    )
+
+
+def add_nodes_line(plot):
+    plot.line(
+        "x",
+        "y",
+        source=nodes_in_equatorial_plane,
+        line_width=3,
+        line_alpha=0.3,
+        color="grey",
+    )
+    plot.add_layout(
+        LabelSet(
+            text="labels",
+            x="x",
+            y="y",
+            text_baseline="middle",
+            text_align="left",
+            source=nodes_in_equatorial_plane,
+            text_color="grey",
+            text_font_size="8pt",
+            x_offset=10,
+            y_offset=0,
+        )
     )
 
 
@@ -253,6 +281,20 @@ def add_equator_line(plot):
             y=0.03 * plots_range,
             text_font_size="8pt",
             text_color="green",
+        )
+    )
+
+
+def add_equatorial_plane(plot):
+    plot.add_layout(
+        Label(
+            text="equatorial plane",
+            x=-0.7 * plots_range,
+            y=0.7 * plots_range,
+            text_align="center",
+            text_color="green",
+            text_font_size="9pt",
+            angle=np.pi / 4,
         )
     )
 
@@ -402,6 +444,8 @@ plot_pole = create_plot(
 )
 add_vernal_direction(plot_pole)
 add_Gomega(plot_pole)
+add_nodes_line(plot_pole)
+add_equatorial_plane(plot_pole)
 
 plot_vernal = create_plot(
     orbit_3d, "y", "z", "+x", position_3d, "orbit seen from Vernal equinox"
@@ -433,6 +477,7 @@ callback_args = dict(
     position_in_orbital_plane=position_in_orbital_plane,
     position_3d=position_3d,
     apsides_in_orbital_plane=apsides_in_orbital_plane,
+    nodes_in_equatorial_plane=nodes_in_equatorial_plane,
     sma=sma,
     eccentricity=eccentricity,
     aop=aop,
