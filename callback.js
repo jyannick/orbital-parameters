@@ -35,8 +35,8 @@ function compute_orbit(v) {
   let x_shape = r * cos_omega * cos_v - r * sin_omega * sin_v;
   let y_shape = r * sin_omega * cos_v + r * cos_omega * sin_v;
 
-  let x_incli_only = -x_shape;
-  let y_incli_only = -y_shape * cos_i;
+  let x_incli_only = x_shape;
+  let y_incli_only = y_shape * cos_i;
   let z_incli_only = y_shape * sin_i;
 
   let x = x_incli_only * cos_Gomega - y_incli_only * sin_Gomega;
