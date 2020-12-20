@@ -17,7 +17,14 @@ sma = Slider(
     step=10,
     css_classes=["sma_slider"],
 )
-eccentricity = Slider(title="eccentricity (-)", value=0.7, start=0, end=1, step=0.01)
+eccentricity = Slider(
+    title="e: eccentricity (-)",
+    value=0.7,
+    start=0,
+    end=1,
+    step=0.01,
+    css_classes=["ecc_slider"],
+)
 aop = Slider(
     title="ω: argument of perigee (deg)",
     value=0,
@@ -26,7 +33,7 @@ aop = Slider(
     step=1,
     css_classes=["omega_slider"],
 )
-inclination = Slider(title="inclination (deg)", value=0, start=0, end=180, step=1)
+inclination = Slider(title="i: inclination (deg)", value=10, start=0, end=180, step=1)
 raan = Slider(
     title="right ascension of ascending node (deg)",
     value=0,
@@ -56,6 +63,7 @@ plot_shape = plots.create_plot(
 plots.add_ascending_node_direction(plot_shape)
 plots.add_apsides_line(plot_shape, datasources.apsides_in_orbital_plane)
 plots.add_sma(plot_shape, datasources.orbital_parameters)
+plots.add_eccentricity(plot_shape, datasources.orbital_parameters)
 plots.add_omega(plot_shape, datasources.orbital_parameters)
 plots.add_anomaly(
     plot_shape, datasources.orbital_parameters, datasources.position_in_orbital_plane

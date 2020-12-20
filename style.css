@@ -29,6 +29,14 @@ a {
   background-color: yellow !important;
 }
 
+.ecc_slider {
+  color: deepskyblue;
+}
+
+.ecc_slider .bk-noUi-connect {
+  background-color: deepskyblue !important;
+}
+
 .omega_slider {
   color: orange;
 }

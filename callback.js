@@ -123,6 +123,8 @@ orbital_parameters.data["a_label_y"][0] =
     orbital_parameters.data["a_y_end"][0]) /
   2;
 orbital_parameters.data["e"][0] = e;
+orbital_parameters.data["e_label_x"][0] = x_center_in_orbital_plane / 2;
+orbital_parameters.data["e_label_y"][0] = y_center_in_orbital_plane / 2;
 orbital_parameters.data["i"][0] = inc;
 orbital_parameters.data["omega"][0] = omega;
 orbital_parameters.data["omega_label_x"][0] = 15e3 * window.Math.cos(omega / 2);

@@ -12,6 +12,7 @@ ORBIT_COLOR = "rgb(84, 227, 220)"
 NORTH_ARROW_COLOR = "rgb(35, 49, 245)"
 VERNAL_ARROW_COLOR = "rgb(8, 94, 71)"
 SMA_COLOR = "yellow"
+ECC_COLOR = "DeepSkyBlue"
 OMEGA_COLOR = "orange"
 GOMEGA_COLOR = "green"
 V_COLOR = "red"
@@ -232,6 +233,32 @@ def add_sma(plot, orbital_parameters):
             text_align="center",
             source=orbital_parameters,
             text_color=SMA_COLOR,
+            x_offset=10,
+            y_offset=10,
+        )
+    )
+
+
+def add_eccentricity(plot, orbital_parameters):
+    plot.segment(
+        x0="a_x_start",
+        x1=0,
+        y0="a_y_start",
+        y1=0,
+        source=orbital_parameters,
+        line_width=3,
+        line_alpha=0.8,
+        color=ECC_COLOR,
+    )
+    plot.add_layout(
+        LabelSet(
+            text="e_text",
+            x="e_label_x",
+            y="e_label_y",
+            text_baseline="middle",
+            text_align="center",
+            source=orbital_parameters,
+            text_color=ECC_COLOR,
             x_offset=10,
             y_offset=10,
         )
