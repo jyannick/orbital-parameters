@@ -6,16 +6,8 @@ from bokeh.models.arrow_heads import VeeHead
 from bokeh.plotting import figure
 
 import constants
+from colors import colors
 from datasources import earth, generate_view
-
-ORBIT_COLOR = "rgb(84, 227, 220)"
-NORTH_ARROW_COLOR = "rgb(35, 49, 245)"
-VERNAL_ARROW_COLOR = "rgb(8, 94, 71)"
-SMA_COLOR = "yellow"
-ECC_COLOR = "DeepSkyBlue"
-OMEGA_COLOR = "orange"
-GOMEGA_COLOR = "green"
-V_COLOR = "red"
 
 
 def create_plot(source, x, y, depth, sat_position, title):
@@ -30,19 +22,20 @@ def create_plot(source, x, y, depth, sat_position, title):
         tools="",
         x_range=[-constants.PLOTS_RANGE, constants.PLOTS_RANGE],
         y_range=[-constants.PLOTS_RANGE, constants.PLOTS_RANGE],
-        background_fill_color="rgb(32, 32, 32)",
-        border_fill_color="rgb(40, 40, 40)",
+        background_fill_color=colors["background"],
+        border_fill_color=colors["elements-background"],
         outline_line_alpha=0,
     )
-    plot.title.text_color = "dodgerblue"
+    plot.title.text_color = colors["text-dimmed"]
     plot.grid.visible = False
+    plot.axis.visible = False
     plot.line(
         x,
         y,
         source=source,
         line_width=3,
-        line_alpha=0.8,
-        line_color=ORBIT_COLOR,
+        line_dash="dashed",
+        line_color=colors["orbit"],
     )
     plot.line(
         x,
@@ -50,10 +43,15 @@ def create_plot(source, x, y, depth, sat_position, title):
         source=source,
         view=generate_view(source, depth_coordinate, depth_is_positive),
         line_width=5,
-        alpha=0.8,
-        line_color=ORBIT_COLOR,
+        line_color=colors["orbit"],
     )
-    plot.circle_cross(x, y, source=sat_position, color="red", size=10, fill_alpha=0.2)
+    plot.circle_cross(
+        x,
+        y,
+        source=sat_position,
+        color=colors["satellite"],
+        size=10,
+    )
     plot.add_layout(
         Band(
             base="x",
@@ -63,8 +61,8 @@ def create_plot(source, x, y, depth, sat_position, title):
             level="underlay",
             fill_alpha=0.5,
             line_width=1,
-            line_color="grey",
-            fill_color="grey",
+            line_color=colors["earth"],
+            fill_color=colors["earth"],
         )
     )
     return plot
@@ -74,14 +72,14 @@ def add_north_direction(plot):
     plot.add_layout(
         Arrow(
             end=VeeHead(
-                size=10, fill_color=NORTH_ARROW_COLOR, line_color=NORTH_ARROW_COLOR
+                size=10, fill_color=colors["north"], line_color=colors["north"]
             ),
             line_width=3,
             x_start=0,
             y_start=0,
             x_end=0,
             y_end=constants.PLOTS_RANGE,
-            line_color=NORTH_ARROW_COLOR,
+            line_color=colors["north"],
         )
     )
     plot.add_layout(
@@ -90,7 +88,7 @@ def add_north_direction(plot):
             x=0.05 * constants.PLOTS_RANGE,
             y=0.8 * constants.PLOTS_RANGE,
             text_font_size="8pt",
-            text_color=NORTH_ARROW_COLOR,
+            text_color=colors["north"],
         )
     )
 
@@ -99,23 +97,23 @@ def add_vernal_direction(plot):
     plot.add_layout(
         Arrow(
             end=VeeHead(
-                size=10, fill_color=VERNAL_ARROW_COLOR, line_color=VERNAL_ARROW_COLOR
+                size=10, fill_color=colors["vernal"], line_color=colors["vernal"]
             ),
             line_width=3,
             x_start=0,
             y_start=0,
             x_end=constants.PLOTS_RANGE,
             y_end=0,
-            line_color=VERNAL_ARROW_COLOR,
+            line_color=colors["vernal"],
         )
     )
     plot.add_layout(
         Label(
-            text="Vernal equinox",
+            text="Vernal Equinox",
             x=0.5 * constants.PLOTS_RANGE,
             y=-0.1 * constants.PLOTS_RANGE,
             text_font_size="8pt",
-            text_color=VERNAL_ARROW_COLOR,
+            text_color=colors["vernal"],
         )
     )
 
@@ -123,21 +121,26 @@ def add_vernal_direction(plot):
 def add_ascending_node_direction(plot):
     plot.add_layout(
         Arrow(
-            end=VeeHead(size=10),
+            end=VeeHead(
+                size=10,
+                fill_color=colors["ascending-node"],
+                line_color=colors["ascending-node"],
+            ),
             line_width=3,
             x_start=0,
             y_start=0,
-            x_end=0.5 * constants.PLOTS_RANGE,
+            x_end=constants.PLOTS_RANGE,
             y_end=0,
+            line_color=colors["ascending-node"],
         )
     )
     plot.add_layout(
         Label(
-            text="ascending node",
-            x=0.33 * constants.PLOTS_RANGE,
-            y=-0.03 * constants.PLOTS_RANGE,
+            text="Ascending Node",
+            x=0.5 * constants.PLOTS_RANGE,
+            y=-0.1 * constants.PLOTS_RANGE,
             text_font_size="8pt",
-            text_color="grey",
+            text_color=colors["ascending-node"],
         )
     )
 
@@ -149,7 +152,7 @@ def add_apsides_line(plot, apsides_in_orbital_plane):
         source=apsides_in_orbital_plane,
         line_width=3,
         line_alpha=0.3,
-        color="grey",
+        color=colors["apsides"],
     )
 
 
@@ -160,7 +163,7 @@ def add_nodes_line(plot, nodes_in_equatorial_plane):
         source=nodes_in_equatorial_plane,
         line_width=3,
         line_alpha=0.3,
-        color="grey",
+        color=colors["nodes"],
     )
     plot.add_layout(
         LabelSet(
@@ -170,7 +173,7 @@ def add_nodes_line(plot, nodes_in_equatorial_plane):
             text_baseline="middle",
             text_align="left",
             source=nodes_in_equatorial_plane,
-            text_color="grey",
+            text_color=colors["nodes"],
             text_font_size="8pt",
             x_offset=10,
             y_offset=0,
@@ -183,18 +186,18 @@ def add_equator_line(plot):
         Span(
             location=0,
             dimension="width",
-            line_color="green",
+            line_color=colors["equator"],
             line_dash="dashed",
             line_width=1,
         )
     )
     plot.add_layout(
         Label(
-            text="equator",
+            text="Equator",
             x=-0.9 * constants.PLOTS_RANGE,
             y=0.03 * constants.PLOTS_RANGE,
             text_font_size="8pt",
-            text_color="green",
+            text_color=colors["equator"],
         )
     )
 
@@ -202,11 +205,11 @@ def add_equator_line(plot):
 def add_equatorial_plane(plot):
     plot.add_layout(
         Label(
-            text="equatorial plane",
+            text="Equatorial Plane",
             x=-0.7 * constants.PLOTS_RANGE,
             y=0.7 * constants.PLOTS_RANGE,
             text_align="center",
-            text_color="green",
+            text_color=colors["equator"],
             text_font_size="9pt",
             angle=pi / 4,
         )
@@ -222,7 +225,7 @@ def add_sma(plot, orbital_parameters):
         source=orbital_parameters,
         line_width=3,
         line_alpha=0.8,
-        color=SMA_COLOR,
+        color=colors["sma"],
     )
     plot.add_layout(
         LabelSet(
@@ -232,7 +235,7 @@ def add_sma(plot, orbital_parameters):
             text_baseline="middle",
             text_align="center",
             source=orbital_parameters,
-            text_color=SMA_COLOR,
+            text_color=colors["sma"],
             x_offset=10,
             y_offset=10,
         )
@@ -248,7 +251,7 @@ def add_eccentricity(plot, orbital_parameters):
         source=orbital_parameters,
         line_width=3,
         line_alpha=0.8,
-        color=ECC_COLOR,
+        color=colors["eccentricity"],
     )
     plot.add_layout(
         LabelSet(
@@ -258,7 +261,7 @@ def add_eccentricity(plot, orbital_parameters):
             text_baseline="middle",
             text_align="center",
             source=orbital_parameters,
-            text_color=ECC_COLOR,
+            text_color=colors["eccentricity"],
             x_offset=10,
             y_offset=10,
         )
@@ -273,7 +276,7 @@ def add_omega(plot, orbital_parameters):
         end_angle="omega",
         inner_radius=8000,
         outer_radius=10000,
-        color=OMEGA_COLOR,
+        color=colors["omega"],
         source=orbital_parameters,
     )
     plot.add_layout(
@@ -284,7 +287,7 @@ def add_omega(plot, orbital_parameters):
             text_baseline="middle",
             text_align="center",
             source=orbital_parameters,
-            text_color=OMEGA_COLOR,
+            text_color=colors["omega"],
         )
     )
 
@@ -297,7 +300,7 @@ def add_Gomega(plot, orbital_parameters):
         end_angle="Gomega",
         inner_radius=8000,
         outer_radius=10000,
-        color=GOMEGA_COLOR,
+        color=colors["Gomega"],
         source=orbital_parameters,
     )
     plot.add_layout(
@@ -308,7 +311,7 @@ def add_Gomega(plot, orbital_parameters):
             text_baseline="middle",
             text_align="center",
             source=orbital_parameters,
-            text_color=GOMEGA_COLOR,
+            text_color=colors["Gomega"],
         )
     )
 
@@ -321,7 +324,7 @@ def add_anomaly(plot, orbital_parameters, position_in_orbital_plane):
         end_angle="v_end",
         inner_radius=10000,
         outer_radius=12000,
-        color=V_COLOR,
+        color=colors["anomaly"],
         source=orbital_parameters,
     )
     plot.add_layout(
@@ -332,7 +335,7 @@ def add_anomaly(plot, orbital_parameters, position_in_orbital_plane):
             text_baseline="middle",
             text_align="center",
             source=orbital_parameters,
-            text_color=V_COLOR,
+            text_color=colors["anomaly"],
         )
     )
     plot.segment(
@@ -343,5 +346,5 @@ def add_anomaly(plot, orbital_parameters, position_in_orbital_plane):
         source=position_in_orbital_plane,
         line_width=3,
         line_alpha=0.3,
-        color="grey",
+        color=colors["anomaly"],
     )

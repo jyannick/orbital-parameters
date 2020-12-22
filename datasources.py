@@ -6,7 +6,7 @@ from bokeh.models import ColumnDataSource
 
 import constants
 
-N = 180
+N = 100
 
 x = np.zeros(N)
 y = np.zeros(N)
@@ -15,7 +15,7 @@ orbit_shape = ColumnDataSource(data=dict(x=x, y=y, z=z))
 position_in_orbital_plane = ColumnDataSource(data=dict(x=np.zeros(1), y=np.zeros(1)))
 apsides_in_orbital_plane = ColumnDataSource(data=dict(x=np.zeros(2), y=np.zeros(2)))
 nodes_in_equatorial_plane = ColumnDataSource(
-    data=dict(x=np.zeros(2), y=np.zeros(2), labels=["asc. node", "desc. node"])
+    data=dict(x=np.zeros(2), y=np.zeros(2), labels=["Asc. Node", "Desc. Node"])
 )
 orbit_3d = ColumnDataSource(data=dict(x=x, y=y, z=z))
 position_3d = ColumnDataSource(data=dict(x=np.zeros(1), y=np.zeros(1), z=np.zeros(1)))
@@ -65,7 +65,7 @@ def generate_view(source, axis, positive):
         var indices = [];
 
         for (var i = 0; i < source.get_length(); i++){{
-            if (source.data['{axis}'][i] {'>' if positive else '<='} 0){{
+            if (source.data['{axis}'][i] {'>=' if positive else '<'} 0){{
                 indices.push(true);
             }} else {{
                 indices.push(false);

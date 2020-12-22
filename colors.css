@@ -1,0 +1,21 @@
+:root {
+  --background: rgb(40, 40, 40);
+  --elements-background: rgb(72, 72, 72);
+  --text: lightgray;
+  --text-dimmed: silver;
+  --sma: rgb(255, 231, 0);
+  --eccentricity: rgb(77, 238, 234);
+  --inclination: rgb(116, 238, 21);
+  --omega: rgb(60, 145, 230);
+  --Gomega: rgb(240, 31, 255);
+  --anomaly: rgb(228, 17, 63);
+  --orbit: lightgray;
+  --satellite: var(--anomaly);
+  --earth: silver;
+  --north: grey;
+  --vernal: grey;
+  --ascending-node: var(--Gomega);
+  --apsides: var(--omega);
+  --nodes: var(--Gomega);
+  --equator: var(--inclination);
+}

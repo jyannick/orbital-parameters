@@ -15,7 +15,7 @@ sma = Slider(
     start=0,
     end=constants.MAX_SMA,
     step=10,
-    css_classes=["sma_slider"],
+    css_classes=["slider", "sma_slider"],
 )
 eccentricity = Slider(
     title="e: eccentricity (-)",
@@ -23,32 +23,39 @@ eccentricity = Slider(
     start=0,
     end=1,
     step=0.01,
-    css_classes=["ecc_slider"],
+    css_classes=["slider", "ecc_slider"],
 )
 aop = Slider(
     title="ω: argument of perigee (deg)",
-    value=0,
+    value=195,
     start=0,
     end=360,
     step=1,
-    css_classes=["omega_slider"],
+    css_classes=["slider", "omega_slider"],
 )
-inclination = Slider(title="i: inclination (deg)", value=10, start=0, end=180, step=1)
+inclination = Slider(
+    title="i: inclination (deg)",
+    value=10,
+    start=0,
+    end=180,
+    step=1,
+    css_classes=["slider", "inc_slider"],
+)
 raan = Slider(
     title="right ascension of ascending node (deg)",
-    value=0,
+    value=95,
     start=0,
     end=360,
     step=1,
-    css_classes=["Gomega_slider"],
+    css_classes=["slider", "Gomega_slider"],
 )
 anomaly = Slider(
     title="𝜈: true anomaly (deg)",
-    value=0,
+    value=70,
     start=0,
     end=359,
     step=1,
-    css_classes=["anomaly_slider"],
+    css_classes=["slider", "anomaly_slider"],
 )
 
 
@@ -139,11 +146,13 @@ inputs = column(
     Div(text="<h2>Orbital Parameters</h2>"),
     sma,
     eccentricity,
-    aop,
     inclination,
+    aop,
     raan,
     anomaly,
     sizing_mode="stretch_width",
+    height=400,
+    css_classes=["inputs"],
 )
 plots = gridplot(
     [[inputs, plot_vernal, plot_xz], [plot_shape, orbit_description_div, plot_pole]],
