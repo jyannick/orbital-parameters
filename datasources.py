@@ -6,7 +6,7 @@ from bokeh.models import ColumnDataSource
 
 import constants
 
-N = 100
+N = 360
 
 x = np.zeros(N)
 y = np.zeros(N)
@@ -65,7 +65,7 @@ def generate_view(source, axis, positive):
         var indices = [];
 
         for (var i = 0; i < source.get_length(); i++){{
-            if (source.data['{axis}'][i] {'>=' if positive else '<'} 0){{
+            if (source.data['{axis}'][i] {'>=' if positive else '<='} 0){{
                 indices.push(true);
             }} else {{
                 indices.push(false);

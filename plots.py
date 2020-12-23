@@ -37,15 +37,15 @@ def create_plot(source, x, y, depth, sat_position, title):
         line_dash="dashed",
         line_color=colors["orbit"],
     )
-    plot.line(
+    plot.circle(
         x,
         y,
         source=source,
         view=generate_view(source, depth_coordinate, depth_is_positive),
-        line_width=5,
-        line_color=colors["orbit"],
+        size=5,
+        color=colors["orbit"],
     )
-    plot.circle_cross(
+    plot.circle(
         x,
         y,
         source=sat_position,
