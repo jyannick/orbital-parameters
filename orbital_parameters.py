@@ -42,7 +42,7 @@ inclination = Slider(
     css_classes=["slider", "inc_slider"],
 )
 raan = Slider(
-    title="right ascension of ascending node (deg)",
+    title="Ω: right ascension of ascending node (deg)",
     value=95,
     start=0,
     end=360,
