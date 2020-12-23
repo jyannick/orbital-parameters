@@ -1,62 +1,63 @@
 from bokeh.layouts import column, gridplot, layout
-from bokeh.models import Div
+from bokeh.models import Div, Button
 from bokeh.models.callbacks import CustomJS
-from bokeh.models.widgets import Slider
+
 from bokeh.plotting import save, output_file
 from jinja2 import Environment, FileSystemLoader
 
 import plots
 import constants
 import datasources
+import widgets
 
 # Set up widgets
-sma = Slider(
+sma_widget, sma = widgets.build_orbital_parameter(
     title="a: semi-major axis (km)",
     value=42164,
     start=0,
     end=constants.MAX_SMA,
-    step=10,
-    css_classes=["slider", "sma_slider"],
+    step=1,
+    css_class="sma",
 )
-eccentricity = Slider(
+eccentricity_widget, eccentricity = widgets.build_orbital_parameter(
     title="e: eccentricity (-)",
     value=0.7,
     start=0,
     end=1,
     step=0.01,
-    css_classes=["slider", "ecc_slider"],
+    css_class="ecc",
 )
-aop = Slider(
+aop_widget, aop = widgets.build_orbital_parameter(
     title="ω: argument of perigee (deg)",
     value=195,
     start=0,
     end=360,
     step=1,
-    css_classes=["slider", "omega_slider"],
+    css_class="omega",
 )
-inclination = Slider(
+inclination_widget, inclination = widgets.build_orbital_parameter(
     title="i: inclination (deg)",
     value=10,
     start=0,
     end=180,
     step=1,
-    css_classes=["slider", "inc_slider"],
+    css_class="inc",
 )
-raan = Slider(
+raan_widget, raan = widgets.build_orbital_parameter(
     title="Ω: right ascension of ascending node (deg)",
     value=95,
     start=0,
     end=360,
     step=1,
-    css_classes=["slider", "Gomega_slider"],
+    css_class="Gomega",
 )
-anomaly = Slider(
+anomaly_widget, anomaly = widgets.build_orbital_parameter(
     title="𝜈: true anomaly (deg)",
     value=70,
     start=0,
     end=359,
     step=1,
-    css_classes=["slider", "anomaly_slider"],
+    css_class="anomaly",
 )
 
 
@@ -145,12 +146,12 @@ for w in [sma, eccentricity, aop, inclination, raan, anomaly]:
 # Set up layouts and add to document
 inputs = column(
     Div(text="<h2>Orbital Parameters</h2>"),
-    sma,
-    eccentricity,
-    inclination,
-    aop,
-    raan,
-    anomaly,
+    sma_widget,
+    eccentricity_widget,
+    inclination_widget,
+    aop_widget,
+    raan_widget,
+    anomaly_widget,
     sizing_mode="stretch_width",
     height=400,
     css_classes=["inputs"],
@@ -161,19 +162,20 @@ plots = gridplot(
 )
 intro = Div(
     text="""
-<h1>Orbital Parameters Visualization</h1>
-<p>Manipulate the sliders to change the keplerian orbit parameters,
- and see how they affect the orbit in real time.</p>
+<h1>Orbit Visualization</h1>
 <p>When the orbit trajectory is represented by a thick line,
  it means that it is above the plane of the screen.</p>
 """,
     sizing_mode="stretch_width",
 )
 
+button = Button(label="Update", css_classes=["update_button"], width=1, height=1)
+button.js_on_click(CustomJS(args=callback_args, code=sliders_callback_code))
+
 _env = Environment(loader=FileSystemLoader("templates"))
 output_file("index.html")
 save(
-    layout(intro, plots),
+    layout(intro, button, plots),
     title="Orbital Parameters Visualization",
     template=_env.get_template("template.html.j2"),
 )

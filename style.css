@@ -11,12 +11,21 @@ html {
   color: var(--text);
 }
 
+.update_button {
+  visibility: hidden;
+}
+
 .inputs {
   color: var(--text-dimmed);
 }
 
 .noUi-base {
   background-color: var(--elements-background);
+}
+
+.spinner input {
+  background-color: var(--elements-background) !important;
+  color: var(--text);
 }
 
 .footnote a {
