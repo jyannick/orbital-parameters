@@ -19,8 +19,12 @@ html {
   background-color: var(--elements-background);
 }
 
-a {
+.footnote a {
+  display: block;
+  width: 100%;
+  text-align: center !important;
   color: var(--text-dimmed);
+  font-size: small;
 }
 
 .sma_slider {

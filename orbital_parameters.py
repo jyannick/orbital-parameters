@@ -2,7 +2,8 @@ from bokeh.layouts import column, gridplot, layout
 from bokeh.models import Div
 from bokeh.models.callbacks import CustomJS
 from bokeh.models.widgets import Slider
-from bokeh.plotting import output_file, show
+from bokeh.plotting import save, output_file
+from jinja2 import Environment, FileSystemLoader
 
 import plots
 import constants
@@ -158,7 +159,6 @@ plots = gridplot(
     [[inputs, plot_vernal, plot_xz], [plot_shape, orbit_description_div, plot_pole]],
     toolbar_options=dict(logo=None),
 )
-style = Div(text="<LINK href='style.css' rel='stylesheet' type='text/css'>")
 intro = Div(
     text="""
 <h1>Orbital Parameters Visualization</h1>
@@ -169,14 +169,11 @@ intro = Div(
 """,
     sizing_mode="stretch_width",
 )
-footnote = Div(
-    align="center",
-    text="""
-    <a href="https://github.com/jyannick/orbital-parameters">
-        View project page on GitHub
-    </a>
-    """,
-)
 
-output_file("index.html", title="Orbital Parameters Visualization")
-show(layout(style, intro, plots, footnote))
+_env = Environment(loader=FileSystemLoader("templates"))
+output_file("index.html")
+save(
+    layout(intro, plots),
+    title="Orbital Parameters Visualization",
+    template=_env.get_template("template.html.j2"),
+)
