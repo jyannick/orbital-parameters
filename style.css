@@ -15,7 +15,7 @@ html {
   color: var(--text-dimmed);
 }
 
-.bk-noUi-base {
+.noUi-base {
   background-color: var(--elements-background);
 }
 
@@ -27,7 +27,7 @@ a {
   color: var(--sma);
 }
 
-.sma_slider .bk-noUi-connect {
+.sma_slider .noUi-connect {
   background-color: var(--sma) !important;
 }
 
@@ -35,7 +35,7 @@ a {
   color: var(--eccentricity);
 }
 
-.ecc_slider .bk-noUi-connect {
+.ecc_slider .noUi-connect {
   background-color: var(--eccentricity) !important;
 }
 
@@ -43,7 +43,7 @@ a {
   color: var(--inclination);
 }
 
-.inc_slider .bk-noUi-connect {
+.inc_slider .noUi-connect {
   background-color: var(--inclination) !important;
 }
 
@@ -51,7 +51,7 @@ a {
   color: var(--omega);
 }
 
-.omega_slider .bk-noUi-connect {
+.omega_slider .noUi-connect {
   background-color: var(--omega) !important;
 }
 
@@ -59,7 +59,7 @@ a {
   color: var(--Gomega);
 }
 
-.Gomega_slider .bk-noUi-connect {
+.Gomega_slider .noUi-connect {
   background-color: var(--Gomega) !important;
 }
 
@@ -67,6 +67,6 @@ a {
   color: var(--anomaly);
 }
 
-.anomaly_slider .bk-noUi-connect {
+.anomaly_slider .noUi-connect {
   background-color: var(--anomaly) !important;
 }
