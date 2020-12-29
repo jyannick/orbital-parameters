@@ -163,8 +163,7 @@ plots = gridplot(
 intro = Div(
     text="""
 <h1>Orbit Visualization</h1>
-<p>When the orbit trajectory is represented by a thick line,
- it means that it is above the plane of the screen.</p>
+<p>A dashed line means the orbit is below the plane of the screen.</p>
 """,
     sizing_mode="stretch_width",
 )

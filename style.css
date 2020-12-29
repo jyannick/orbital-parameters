@@ -28,6 +28,10 @@ html {
   color: var(--text);
 }
 
+.footnote {
+  margin: 0 auto;
+}
+
 .footnote a {
   display: block;
   width: 100%;
